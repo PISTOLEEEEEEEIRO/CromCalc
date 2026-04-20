@@ -65,8 +65,14 @@ function initApp() {
     document.querySelectorAll('.quick-select button').forEach(btn => {
         btn.addEventListener('click', () => {
             const val = parseFloat(btn.dataset.value);
-            if (btn.parentElement.id === 'quick-diametro') { inD.value = val; state.diametro = val; }
-            else { inL.value = val; state.comprimento = val; }
+            if (btn.parentElement.id === 'quick-diametro') {
+                inD.value = val;
+                state.diametro = val;
+            }
+            else {
+                inL.value = val;
+                state.comprimento = val;
+            }
             atualizarResultados();
         });
     });
