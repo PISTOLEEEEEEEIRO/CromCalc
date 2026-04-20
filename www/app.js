@@ -1,5 +1,5 @@
 /**
- * CromCalc 2026 — Lógica de Cálculo FINAL (Ajustada pelo Diâmetro)
+ * CromCalc 2026 — Lógica de Cálculo FINAL
  */
 
 const SERVICOS = {
@@ -20,9 +20,6 @@ function calcularArea(diametro, comprimento) {
     return (Math.PI * diametro * comprimento) / 10000;
 }
 
-/**
- * DETERMINAÇÃO DA FAIXA PELO DIÂMETRO (Conforme comportamento do Excel)
- */
 function obterConfigFaixa(diametro) {
     if (diametro > 50)  return { fator: 32.1, k: 0,   nome: 'Faixa 1 (>50)' };
     if (diametro > 25)  return { fator: 27.3, k: 35,  nome: 'Faixa 2 (26-50)' };
@@ -34,8 +31,6 @@ function obterConfigFaixa(diametro) {
 function atualizarResultados() {
     const area = calcularArea(state.diametro, state.comprimento);
     const config = obterConfigFaixa(state.diametro);
-
-    // O Valor Base usa a Área, mas os coeficientes vêm do Diâmetro
     const valorBase = area > 0 ? (area * config.fator) + config.k : 0;
     const precoFinal = SERVICOS[state.servico].calculo(valorBase);
 
@@ -50,6 +45,24 @@ function initApp() {
     const inD = document.getElementById('diametro');
     const inL = document.getElementById('comprimento');
 
+    // Escutando cliques em qualquer botão de seleção rápida
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.quick-select button');
+        if (btn) {
+            const val = btn.getAttribute('data-value');
+            const parent = btn.closest('.quick-select').id;
+
+            if (parent === 'quick-diametro') {
+                inD.value = val;
+                state.diametro = parseFloat(val);
+            } else {
+                inL.value = val;
+                state.comprimento = parseFloat(val);
+            }
+            atualizarResultados();
+        }
+    });
+
     inD.addEventListener('input', (e) => { state.diametro = parseFloat(e.target.value) || 0; atualizarResultados(); });
     inL.addEventListener('input', (e) => { state.comprimento = parseFloat(e.target.value) || 0; atualizarResultados(); });
 
@@ -62,19 +75,13 @@ function initApp() {
         });
     });
 
-    document.querySelectorAll('.quick-select button').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const val = parseFloat(btn.dataset.value);
-            if (btn.parentElement.id === 'quick-diametro') {
-                inD.value = val;
-                state.diametro = val;
-            }
-            else {
-                inL.value = val;
-                state.comprimento = val;
-            }
-            atualizarResultados();
-        });
+    document.getElementById('clear-btn').addEventListener('click', () => {
+        inD.value = ''; inL.value = '';
+        state.diametro = 0; state.comprimento = 0; state.servico = 'cromoCamada';
+        document.querySelectorAll('.service-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('[data-service="cromoCamada"]').classList.add('active');
+        atualizarResultados();
     });
 }
+
 document.addEventListener('DOMContentLoaded', initApp);
