@@ -1,6 +1,9 @@
 {
+  "public": true,
   "cleanUrls": true,
   "rewrites": [
+    { "source": "/", "destination": "/www/index.html" },
+    { "source": "/(css|js|img|assets)/(.*)", "destination": "/www/$1/$2" },
     { "source": "/(.*)", "destination": "/www/$1" }
   ]
 }

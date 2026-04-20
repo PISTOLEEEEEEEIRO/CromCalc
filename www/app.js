@@ -1,5 +1,5 @@
 /**
- * CromCalc 2026 — Lógica de Cálculo FINAL
+ * CromCalc 2026 — v2.2 (Versão Ultra-Robust)
  */
 
 const SERVICOS = {
@@ -29,6 +29,13 @@ function obterConfigFaixa(diametro) {
 }
 
 function atualizarResultados() {
+    const inD = document.getElementById('diametro');
+    const inL = document.getElementById('comprimento');
+
+    // Sincroniza o estado com o que está escrito nas caixas (caso o usuário tenha digitado)
+    state.diametro = parseFloat(inD.value) || 0;
+    state.comprimento = parseFloat(inL.value) || 0;
+
     const area = calcularArea(state.diametro, state.comprimento);
     const config = obterConfigFaixa(state.diametro);
     const valorBase = area > 0 ? (area * config.fator) + config.k : 0;
@@ -41,30 +48,33 @@ function atualizarResultados() {
     document.getElementById('price-service-label').textContent = SERVICOS[state.servico].nome;
 }
 
+// FUNÇÃO MESTRE DOS BOTÕES (Delegada para o documento)
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.quick-select button');
+    if (btn) {
+        e.preventDefault();
+        const val = btn.getAttribute('data-value');
+        const grupo = btn.closest('.quick-select').id;
+
+        const inD = document.getElementById('diametro');
+        const inL = document.getElementById('comprimento');
+
+        if (grupo === 'quick-diametro') {
+            inD.value = val;
+        } else if (grupo === 'quick-comprimento') {
+            inL.value = val;
+        }
+
+        atualizarResultados();
+    }
+});
+
 function initApp() {
     const inD = document.getElementById('diametro');
     const inL = document.getElementById('comprimento');
 
-    // Escutando cliques em qualquer botão de seleção rápida
-    document.addEventListener('click', function(e) {
-        const btn = e.target.closest('.quick-select button');
-        if (btn) {
-            const val = btn.getAttribute('data-value');
-            const parent = btn.closest('.quick-select').id;
-
-            if (parent === 'quick-diametro') {
-                inD.value = val;
-                state.diametro = parseFloat(val);
-            } else {
-                inL.value = val;
-                state.comprimento = parseFloat(val);
-            }
-            atualizarResultados();
-        }
-    });
-
-    inD.addEventListener('input', (e) => { state.diametro = parseFloat(e.target.value) || 0; atualizarResultados(); });
-    inL.addEventListener('input', (e) => { state.comprimento = parseFloat(e.target.value) || 0; atualizarResultados(); });
+    if (inD) inD.addEventListener('input', atualizarResultados);
+    if (inL) inL.addEventListener('input', atualizarResultados);
 
     document.querySelectorAll('.service-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -75,13 +85,19 @@ function initApp() {
         });
     });
 
-    document.getElementById('clear-btn').addEventListener('click', () => {
-        inD.value = ''; inL.value = '';
-        state.diametro = 0; state.comprimento = 0; state.servico = 'cromoCamada';
-        document.querySelectorAll('.service-btn').forEach(b => b.classList.remove('active'));
-        document.querySelector('[data-service="cromoCamada"]').classList.add('active');
-        atualizarResultados();
-    });
+    const clearBtn = document.getElementById('clear-btn');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            if (inD) inD.value = '';
+            if (inL) inL.value = '';
+            state.servico = 'cromoCamada';
+            document.querySelectorAll('.service-btn').forEach(b => b.classList.remove('active'));
+            const defaultBtn = document.querySelector('[data-service="cromoCamada"]');
+            if (defaultBtn) defaultBtn.classList.add('active');
+            atualizarResultados();
+        });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', initApp);
+console.log("CromCalc v2.2 Carregado com Sucesso!");
