@@ -24,7 +24,7 @@ const SERVICOS = {
     cromoCamada:     { nome: 'Cromo Camada',      calculo: (vb) => vb * 2 },
     cromagemCliente: { nome: 'Cromagem Cliente',   calculo: (vb) => vb / 0.85 },
     retifica:        { nome: 'Retífica',           calculo: (vb) => vb * 0.588 },
-    mecanico:        { nome: 'Mecânico',           calculo: (vb) => vb / 0.85 }
+    mecanico:        { nome: 'Mecânico',           calculo: (vb) => vb }
 };
 
 // Valores de referência rápida (Plan2, colunas F e G)
