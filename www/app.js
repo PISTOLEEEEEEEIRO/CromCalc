@@ -1,5 +1,5 @@
 /**
- * CromCalc 2026 — v2.2 (Versão Ultra-Robust)
+ * CromCalc 2026 — v3.0 (Versão Definitiva)
  */
 
 const SERVICOS = {
@@ -15,6 +15,7 @@ let state = {
     servico: 'cromoCamada'
 };
 
+// --- FUNÇÃO DE CÁLCULO ---
 function calcularArea(diametro, comprimento) {
     if (diametro <= 0 || comprimento <= 0) return 0;
     return (Math.PI * diametro * comprimento) / 10000;
@@ -28,11 +29,11 @@ function obterConfigFaixa(diametro) {
     return { fator: 18.2, k: 300, nome: 'Faixa 5 (≤10)' };
 }
 
+// --- ATUALIZAÇÃO DA TELA ---
 function atualizarResultados() {
     const inD = document.getElementById('diametro');
     const inL = document.getElementById('comprimento');
 
-    // Sincroniza o estado com o que está escrito nas caixas (caso o usuário tenha digitado)
     state.diametro = parseFloat(inD.value) || 0;
     state.comprimento = parseFloat(inL.value) || 0;
 
@@ -48,27 +49,16 @@ function atualizarResultados() {
     document.getElementById('price-service-label').textContent = SERVICOS[state.servico].nome;
 }
 
-// FUNÇÃO MESTRE DOS BOTÕES (Delegada para o documento)
-document.addEventListener('click', function(e) {
-    const btn = e.target.closest('.quick-select button');
-    if (btn) {
-        e.preventDefault();
-        const val = btn.getAttribute('data-value');
-        const grupo = btn.closest('.quick-select').id;
-
-        const inD = document.getElementById('diametro');
-        const inL = document.getElementById('comprimento');
-
-        if (grupo === 'quick-diametro') {
-            inD.value = val;
-        } else if (grupo === 'quick-comprimento') {
-            inL.value = val;
-        }
-
+// --- FUNÇÃO CHAMADA PELOS BOTÕES (onclick) ---
+window.setMedida = function(campo, valor) {
+    const input = document.getElementById(campo);
+    if (input) {
+        input.value = valor;
         atualizarResultados();
     }
-});
+};
 
+// --- INICIALIZAÇÃO ---
 function initApp() {
     const inD = document.getElementById('diametro');
     const inL = document.getElementById('comprimento');
@@ -100,4 +90,3 @@ function initApp() {
 }
 
 document.addEventListener('DOMContentLoaded', initApp);
-console.log("CromCalc v2.2 Carregado com Sucesso!");
