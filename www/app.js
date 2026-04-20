@@ -66,35 +66,29 @@ function calcularPeso(diametro, comprimento) {
 }
 
 /**
- * Identifica a faixa pelo DIÂMETRO e retorna o nome legível
- * Conforme fórmula Excel: IF(AND(B7<=25,B7>0),...)
+ * Identifica a faixa pela ÁREA e retorna o nome legível
  */
-function identificarFaixa(diametro) {
-    if (diametro <= 0) return '—';
-    if (diametro <= 25) return '1 a 25';
-    if (diametro <= 50) return '26 a 50';
-    if (diametro <= 100) return '51 a 100';
-    if (diametro <= 150) return '101 a 150';
+function identificarFaixa(area) {
+    if (area <= 0) return '—';
+    if (area <= 25) return '1 a 25';
+    if (area <= 50) return '26 a 50';
+    if (area <= 100) return '51 a 100';
+    if (area <= 150) return '101 a 150';
     return '> 150';
 }
 
 /**
- * Calcula o valor base usando a tabela de faixas
- * FAIXA é determinada pelo DIÂMETRO (B7)
- * CÁLCULO usa a ÁREA (B9): Valor = (Área × Fator_da_faixa) + k_da_faixa
- * Conforme fórmula Excel: =IF(AND(B7<=25,B7>0),((B9*C3)+(D3)),...)
+ * Calcula o valor base usando a tabela de faixas baseada na ÁREA
+ * CÁLCULO usa a ÁREA: Valor = (Área × Fator_da_faixa) + k_da_faixa
  */
-function calcularValorBase(diametro, area) {
-    if (diametro <= 0 || area <= 0) return 0;
+function calcularValorBase(area) {
+    if (area <= 0) return 0;
     
-    for (const faixa of FAIXAS_DIAMETRO) {
-        if (diametro <= faixa.max) {
-            return (area * faixa.fator) + faixa.k;
-        }
-    }
-    // Fallback (não deve chegar aqui)
-    const ultima = FAIXAS_DIAMETRO[FAIXAS_DIAMETRO.length - 1];
-    return (area * ultima.fator) + ultima.k;
+    if (area <= 25) return (area * 32.1) + 0;
+    if (area <= 50) return (area * 27.3) + 35;
+    if (area <= 100) return (area * 24.1) + 61;
+    if (area <= 150) return (area * 21.5) + 125;
+    return (area * 18.2) + 300;
 }
 
 /**
@@ -143,8 +137,8 @@ function atualizarResultados() {
     // Calcular tudo
     const area = calcularArea(diametro, comprimento);
     const peso = calcularPeso(diametro, comprimento);
-    const faixa = identificarFaixa(diametro);
-    const valorBase = calcularValorBase(diametro, area);
+    const faixa = identificarFaixa(area);
+    const valorBase = calcularValorBase(area);
     const precoFinal = calcularPrecoFinal(valorBase, servico);
     
     // Atualizar exibição
